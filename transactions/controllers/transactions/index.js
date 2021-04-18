@@ -1,7 +1,7 @@
 const joi = require("joi");
 const { v4 } = require("uuid");
-const models = require("../../database/models");
-const { creditAccount, debitAccount } = require("./helpers");
+const models = require("../../../database/models");
+const { creditAccount, debitAccount } = require("../helpers");
 
 // deposit in user account
 

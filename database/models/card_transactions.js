@@ -1,17 +1,14 @@
+"use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Transactions extends Model {
+  class card_transactions extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      // define association here
-      Transactions.belongsTo(models.accounts);
-    }
   }
-  Transactions.init(
+  card_transactions.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -19,51 +16,38 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         allowNull: false,
       },
-      txn_type: {
-        type: DataTypes.ENUM("debit", "credit"),
-        allowNull: false,
-      },
-      purpose: {
-        type: DataTypes.ENUM("deposit", "transfer", "reversal"),
-        allowNull: false,
-      },
-      amount: {
-        type: DataTypes.DECIMAL(20, 4).UNSIGNED,
+      external_reference: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
       account_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      reference: {
-        type: DataTypes.UUID,
+      amount: {
+        type: DataTypes.DECIMAL(20, 4).UNSIGNED,
+        allowNull: false,
+      },
+      last_response: {
+        type: DataTypes.STRING,
         unique: true,
       },
-      balance_before: {
-        type: DataTypes.DECIMAL(20, 4).UNSIGNED,
-        allowNull: false,
-      },
-      balance_after: {
-        type: DataTypes.DECIMAL(20, 4).UNSIGNED,
-        allowNull: false,
-      },
-      metadata: DataTypes.JSON,
       created_at: {
         type: DataTypes.DATE,
-        defaultValue: sequelize.NOW,
+        defaultValue: DataTypes.NOW,
         allowNull: false,
       },
       updated_at: {
         type: DataTypes.DATE,
-        defaultValue: sequelize.NOW,
+        defaultValue: DataTypes.NOW,
         allowNull: false,
       },
     },
     {
       sequelize,
-      modelName: "transactions",
+      modelName: "card_transactions",
       underscored: true,
     }
   );
-  return Transactions;
+  return card_transactions;
 };

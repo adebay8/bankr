@@ -3,11 +3,13 @@ const {
   withdraw,
   reverse,
   transfer,
-} = require("./controllers/transactions");
+  creditAccountFromCard,
+} = require("./controllers");
 
 module.exports = {
   deposit,
   withdraw,
   reverse,
   transfer,
+  creditAccountFromCard,
 };
