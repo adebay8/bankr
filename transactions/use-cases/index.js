@@ -2,8 +2,10 @@ const { deposit } = require("../index");
 const {
   chargeCardWithPaystack,
   submitChargePin,
+  chargeCardWithAuthorization,
+  verifyTransaction,
 } = require("../controllers/card_transactions/paystack");
-const { creditAccountFromCard } = require("../controllers");
+const { creditAccountFromCard, transfer } = require("../controllers");
 const {
   processInitialCharge,
   submitPin,
@@ -69,13 +71,26 @@ class UseCase {
   static submitPhone(data) {
     return submitPhone(data);
   }
+
+  static chargeCardWithAuthorization({ email, amount, authorization_code }) {
+    return chargeCardWithAuthorization({ email, amount, authorization_code });
+  }
 }
+
+// var useCases = new UseCase(
+//   "darkskindeveloper@gmail.com",
+//   "1500000",
+//   "4084084084084081",
+//   "408",
+//   "06",
+//   "21"
+// );
 
 var useCases = new UseCase(
   "darkskindeveloper@gmail.com",
   "1500000",
-  "4084080000000409",
-  "000",
+  "4084080000005408",
+  "001",
   "06",
   "21"
 );
@@ -107,11 +122,27 @@ var useCases4 = new UseCase(
   "21"
 );
 
+var useCases5 = new UseCase(
+  "darkskindeveloper@gmail.com",
+  "9845000",
+  "5060660000000064",
+  "606",
+  "06",
+  "21"
+);
+
 // No validation
 // useCases.creditAccountFromCard().then(console.log).catch(console.log);
 // submitPin({ reference: "c0fbwx3taw39bhl", pin: "1111" }).then(console.log);
 // useCases.submitChargePin();
-// useCases.chargeCardWithPaystack();
+// useCases5.chargeCardWithPaystack();
+// UseCase.chargeCardWithAuthorization({
+//   email: "darkskindeveloper@gmail.com",
+//   amount: "42344000",
+//   authorization_code: "AUTH_8s51cq5yjr",
+// })
+//   .then(console.log)
+//   .catch(console.log);
 
 // Pin
 // useCases2.creditAccountFromCard().then(console.log).catch(console.log);
@@ -138,3 +169,7 @@ var useCases4 = new UseCase(
 //   .then((res) => submitOTP({ reference: res.data.reference, otp: "123456" }))
 //   .then(console.log)
 //   .catch(console.log);
+
+// verifyTransaction("speishxsrdzrf2s").then(console.log);
+
+transfer(1, 2, "300000");

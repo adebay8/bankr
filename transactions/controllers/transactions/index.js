@@ -2,6 +2,7 @@ const joi = require("joi");
 const { v4 } = require("uuid");
 const models = require("../../../database/models");
 const { creditAccount, debitAccount } = require("../helpers");
+const { hashArguments } = require("../../../utils");
 
 // deposit in user account
 
@@ -156,6 +157,8 @@ async function transfer(sender_id, recepient_id, amount) {
 
     await t.commit();
 
+    const hashedRequest = await hashArguments(sender_id, recepient_id, amount);
+    console.log(hashedRequest);
     return {
       success: true,
       message: "transfer successful",

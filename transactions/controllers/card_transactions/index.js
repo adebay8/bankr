@@ -1,18 +1,25 @@
-const { createCardTransaction } = require("../../models");
+const {
+  createCardTransaction,
+  findCardTransactionByReference,
+} = require("../../models");
 const { creditAccount } = require("../helpers");
-const { processInitialCharge, processAccountCredit } = require("./helpers");
-const { chargeCardWithPaystack } = require("./paystack");
+const {
+  processInitialCharge,
+  processAccountCredit,
+  processTransactionResult,
+} = require("./helpers");
+const {
+  chargeCardWithPaystack,
+  submitChargePin,
+  submitChargeOTP,
+  submitChargePhone,
+} = require("./paystack");
 const models = require("../../../database/models");
 
-exports.creditAccountFromCard = async ({
-  account_id,
-  pan,
-  expiry_month,
-  expiry_year,
-  cvv,
-  email,
-  amount,
-}) => {
+exports.creditAccountFromCard = async (req, res, next) => {
+  const { account_id, pan, expiry_month, expiry_year, cvv, email, amount } =
+    req.body;
+
   try {
     const chargeResult = await chargeCardWithPaystack({
       pan,
@@ -25,8 +32,8 @@ exports.creditAccountFromCard = async ({
 
     const nextAction = processInitialCharge(chargeResult);
 
-    if (nextAction.error === "large transaction amount") {
-      return nextAction;
+    if (nextAction.hasOwnProperty("status")) {
+      return res.status(400).json(nextAction);
     }
 
     await createCardTransaction({
@@ -37,10 +44,10 @@ exports.creditAccountFromCard = async ({
     });
 
     if (!nextAction.success) {
-      return {
+      return res.status(400).json({
         success: nextAction.success,
         error: nextAction.error,
-      };
+      });
     }
 
     const t = await models.sequelize.transaction();
@@ -53,20 +60,125 @@ exports.creditAccountFromCard = async ({
           reference: nextAction.data.reference,
           t,
         });
-        return accountCreditResult;
+        return res.status(200).json(accountCreditResult);
       }
-      return nextAction;
+      return res.status(400).json(nextAction);
     } catch (error) {
       t.rollback();
-      return {
+      return res.status(400).json({
         success: false,
         error,
-      };
+      });
     }
   } catch (error) {
     if (error.response) {
-      return error.response.data;
+      return res.status(400).json({ error: error.response.data });
     }
-    return error;
+    return res.status(400).json({ error });
+  }
+};
+
+exports.submitPin = async (req, res, next) => {
+  const { reference, pin } = req.body;
+
+  try {
+    const transaction = await findCardTransactionByReference(reference);
+
+    if (!transaction) {
+      return res.status(400).json({
+        success: false,
+        error: "Transaction not found",
+      });
+    }
+
+    if (transaction.dataValues.last_response === "success") {
+      return res.status(400).json({
+        success: false,
+        error: "Transaction already succeeded",
+      });
+    }
+
+    const charge = await submitChargePin({ reference, pin });
+
+    const result = await processTransactionResult({
+      charge,
+      reference,
+      transaction,
+    });
+    return res.status(200).json(result);
+  } catch (error) {
+    return error.response
+      ? res.status(400).json(error.response.data)
+      : res.status(400).json(error);
+  }
+};
+
+exports.submitOTP = async (req, res, next) => {
+  const { reference, otp } = req.body;
+
+  try {
+    const transaction = await findCardTransactionByReference(reference);
+
+    if (!transaction) {
+      return res.status(400).json({
+        success: false,
+        error: "Transaction not found",
+      });
+    }
+
+    if (transaction.last_response === "success") {
+      return res.status(400).json({
+        success: false,
+        error: "Transaction already succeeded",
+      });
+    }
+
+    const charge = await submitChargeOTP({ reference, otp });
+
+    const result = await processTransactionResult({
+      charge,
+      reference,
+      transaction,
+    });
+    return res.status(200).json(result);
+  } catch (error) {
+    return error.response
+      ? res.status(400).json(error.response.data)
+      : res.status(400).json(error);
+  }
+};
+
+exports.submitPhone = async (req, res, next) => {
+  const { reference, phone } = req.body;
+
+  try {
+    const transaction = await findCardTransactionByReference(reference);
+
+    if (!transaction) {
+      return res.status(400).json({
+        success: false,
+        error: "Transaction not found",
+      });
+    }
+
+    if (transaction.last_response === "success") {
+      return res.status(400).json({
+        success: false,
+        error: "Transaction already succeeded",
+      });
+    }
+
+    const charge = await submitChargePhone({ reference, phone });
+
+    const result = await processTransactionResult({
+      charge,
+      reference,
+      transaction,
+    });
+    return res.status(200).json(result);
+  } catch (error) {
+    return error.response
+      ? res.status(400).json(error.response.data)
+      : res.status(400).json(error);
   }
 };

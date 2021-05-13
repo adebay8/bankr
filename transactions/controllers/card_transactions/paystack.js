@@ -47,6 +47,13 @@ exports.chargeCardWithPaystack = async ({
   }
 };
 
+exports.verifyTransaction = async (reference) => {
+  const transactionResult = await paystack.get(
+    `/transaction/verify/${reference}`
+  );
+  return transactionResult.data;
+};
+
 exports.submitChargePin = async ({ reference, pin }) => {
   const submitResult = await paystack.post("/charge/submit_pin", {
     reference,
@@ -69,4 +76,29 @@ exports.submitChargePhone = async ({ reference, phone }) => {
     phone,
   });
   return submitPhoneResult.data;
+};
+
+exports.getBankList = async ({ country, payWithBank = false }) => {
+  const bankList = await paystack.get("/bank", null, {
+    params: { country, pay_with_bank: payWithBank },
+  });
+
+  return bankList.data;
+};
+
+exports.chargeCardWithAuthorization = async ({
+  email,
+  amount,
+  authorization_code,
+}) => {
+  const chargeResult = await paystack.post(
+    "/transaction/charge_authorization",
+    {
+      email,
+      amount,
+      authorization_code,
+    }
+  );
+
+  return chargeResult.data;
 };

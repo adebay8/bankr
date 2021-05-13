@@ -1,14 +1,5 @@
-const axios = require("axios");
 const dotenv = require("dotenv");
-const {
-  findCardTransactionByReference,
-  updateCardTransaction,
-} = require("../../models");
-const {
-  submitChargePin,
-  submitChargeOTP,
-  submitChargePhone,
-} = require("./paystack");
+const { updateCardTransaction } = require("../../models");
 const models = require("../../../database/models");
 const { creditAccount } = require("../helpers");
 
@@ -41,7 +32,6 @@ exports.processInitialCharge = (chargeResult) => {
   } catch (error) {
     return {
       ...chargeResult,
-      error: "large transaction amount",
     };
   }
 };
@@ -123,99 +113,6 @@ exports.processTransactionResult = async ({
         reference,
       },
     };
-  } catch (error) {
-    return error.response ? error.response.data : error;
-  }
-};
-
-exports.submitPin = async ({ reference, pin }) => {
-  try {
-    const transaction = await findCardTransactionByReference(reference);
-
-    if (!transaction) {
-      return {
-        success: false,
-        error: "Transaction not found",
-      };
-    }
-
-    if (transaction.dataValues.last_response === "success") {
-      return {
-        success: false,
-        error: "Transaction already succeeded",
-      };
-    }
-
-    const charge = await submitChargePin({ reference, pin });
-
-    const result = await this.processTransactionResult({
-      charge,
-      reference,
-      transaction,
-    });
-    return result;
-  } catch (error) {
-    return error.response ? error.response.data : error;
-  }
-};
-
-exports.submitOTP = async ({ reference, otp }) => {
-  try {
-    const transaction = await findCardTransactionByReference(reference);
-
-    if (!transaction) {
-      return {
-        success: false,
-        error: "Transaction not found",
-      };
-    }
-
-    if (transaction.last_response === "success") {
-      return {
-        success: false,
-        error: "Transaction already succeeded",
-      };
-    }
-
-    const charge = await submitChargeOTP({ reference, otp });
-
-    const result = await this.processTransactionResult({
-      charge,
-      reference,
-      transaction,
-    });
-    return result;
-  } catch (error) {
-    return error.response ? error.response.data : error;
-  }
-};
-
-exports.submitPhone = async ({ reference, phone }) => {
-  try {
-    const transaction = await findCardTransactionByReference(reference);
-
-    if (!transaction) {
-      return {
-        success: false,
-        error: "Transaction not found",
-      };
-    }
-
-    if (transaction.last_response === "success") {
-      return {
-        success: false,
-        error: "Transaction already succeeded",
-      };
-    }
-
-    const charge = await submitChargePhone({ reference, phone });
-
-    const result = await this.processTransactionResult({
-      charge,
-      reference,
-      transaction,
-    });
-    return result;
   } catch (error) {
     return error.response ? error.response.data : error;
   }
