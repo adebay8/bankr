@@ -27,7 +27,11 @@ module.exports = {
     dialect: "mysql",
   },
   production: {
-    url: process.env.CLEARDB_DATABASE_URL,
+    host: "us-cdbr-east-04.cleardb.com",
+    username: "b5a6108d432cfc",
+    password: "fbb20969",
+    port: "3306",
+    database: "heroku_6f5e1cfd5d51ba8",
     dialect: "mysql",
     define: {
       timestamps: true,
