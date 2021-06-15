@@ -13,7 +13,9 @@ const server = express();
 const port = process.env.PORT || 5000;
 const environment = process.env.NODE_ENV || "development";
 const origin =
-  environment === "development" ? "http://localhost:3000" : "bankr.com";
+  environment === "development"
+    ? "http://localhost:3000"
+    : "https://bankr.netlify.app/";
 
 // middlewares
 server.use(express.json());
@@ -30,7 +32,7 @@ server.use(passport.initialize());
 server.use(passport.session());
 
 server.get("/", (req, res, next) => {
-  res.json({ success: true, message: "Welcome to the bankr api" });
+  res.json({ success: true, message: "Welcome to the bankr api v2" });
 });
 
 server.post("/paystack_webhook", (req, res, next) => {
