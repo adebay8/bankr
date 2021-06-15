@@ -4,7 +4,7 @@ const {
   submitChargePin,
   chargeCardWithAuthorization,
   verifyTransaction,
-} = require("../controllers/card_transactions/paystack");
+} = require("../controllers/paystack");
 const { creditAccountFromCard, transfer } = require("../controllers");
 const {
   processInitialCharge,

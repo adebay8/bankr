@@ -13,6 +13,24 @@ const paystack = axios.create({
   },
 });
 
+exports.initializeCustomerTransaction = async ({
+  email,
+  amount,
+  callback_url,
+}) => {
+  const initialize = await paystack.post("/transaction/initialize", {
+    email,
+    amount,
+    callback_url,
+  });
+
+  return {
+    success: true,
+    message: initialize.data.message,
+    data: initialize.data.data,
+  };
+};
+
 exports.chargeCardWithPaystack = async ({
   pan,
   expiry_month,
@@ -47,7 +65,7 @@ exports.chargeCardWithPaystack = async ({
   }
 };
 
-exports.verifyTransaction = async (reference) => {
+exports.verifyCustomerTransaction = async (reference) => {
   const transactionResult = await paystack.get(
     `/transaction/verify/${reference}`
   );

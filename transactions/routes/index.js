@@ -6,6 +6,10 @@ const {
   submitOTP,
   submitPhone,
 } = require("../controllers/card_transactions");
+const {
+  initializeTransaction,
+  verifyTransaction,
+} = require("../controllers/transactions");
 const router = require("express").Router();
 dotenv.config();
 
@@ -30,6 +34,10 @@ const isAuthenticated = (req, res, next) => {
     next();
   });
 };
+
+router.post("/initialize", isAuthenticated, initializeTransaction);
+
+router.post("/verify", verifyTransaction);
 
 router.post("/credit_wallet", isAuthenticated, creditAccountFromCard);
 

@@ -24,7 +24,7 @@ async function createUser(req, res, next) {
   });
 
   if (validation.error) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       error: validation.error.details[0].message,
     });
@@ -61,10 +61,13 @@ async function createUser(req, res, next) {
       { transaction: t }
     );
 
+    const token = jwt.sign(JSON.stringify(user), process.env.TOKEN_SECRET);
+
     await t.commit();
 
     res.status(200).json({
       success: true,
+      token,
       message: "User account created",
     });
   } catch (error) {
@@ -86,7 +89,7 @@ async function getUser(req, res, next) {
   });
 
   if (validation.error) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       error: validation.error.details[0].message,
     });
@@ -112,7 +115,7 @@ async function loginUser(req, res, next) {
   });
 
   if (validation.error) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       error: validation.error.details[0].message,
     });
@@ -125,6 +128,13 @@ async function loginUser(req, res, next) {
       { where: { username } },
       { transaction: t }
     );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User does not exist",
+      });
+    }
 
     const token = jwt.sign(JSON.stringify(user), process.env.TOKEN_SECRET);
 
@@ -139,7 +149,7 @@ async function loginUser(req, res, next) {
   } catch (error) {
     await t.rollback();
 
-    res.status(400).json({
+    return res.status(500).json({
       success: false,
       error: "Internal server error",
     });

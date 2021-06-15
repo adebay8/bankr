@@ -13,7 +13,7 @@ const {
   submitChargePin,
   submitChargeOTP,
   submitChargePhone,
-} = require("./paystack");
+} = require("../paystack");
 const models = require("../../../database/models");
 
 exports.creditAccountFromCard = async (req, res, next) => {
