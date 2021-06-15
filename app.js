@@ -15,7 +15,7 @@ const environment = process.env.NODE_ENV || "development";
 const origin =
   environment === "development"
     ? "http://localhost:3000"
-    : "https://bankr.netlify.app/";
+    : "https://bankr.netlify.app";
 
 // middlewares
 server.use(express.json());
