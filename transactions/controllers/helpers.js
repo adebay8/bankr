@@ -1,5 +1,6 @@
 const { v4 } = require("uuid");
 const models = require("../../database/models");
+const moment = require("moment");
 
 async function creditAccount({
   amount,
@@ -96,4 +97,8 @@ async function debitAccount({
   };
 }
 
-module.exports = { creditAccount, debitAccount };
+function referenceGenerator(randomString = "") {
+  return "bk" + moment(Date.now()).format("mmyyhms") + randomString;
+}
+
+module.exports = { creditAccount, debitAccount, referenceGenerator };

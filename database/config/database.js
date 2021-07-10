@@ -9,6 +9,7 @@ module.exports = {
     port: process.env.DATABASE_PORT,
     database: process.env.DATABASE_NAME,
     dialect: "mysql",
+    uri: `mysql://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@${process.env.DATABASE_HOST}:${process.env.DATABASE_PORT}/${process.env.DATABASE_NAME}`,
     define: {
       timestamps: true,
       underscored: true,
@@ -27,11 +28,7 @@ module.exports = {
     dialect: "mysql",
   },
   production: {
-    host: "us-cdbr-east-04.cleardb.com",
-    username: "b5a6108d432cfc",
-    password: "fbb20969",
-    port: "3306",
-    database: "heroku_6f5e1cfd5d51ba8",
+    uri: process.env.CLEARDB_DATABASE_URL,
     dialect: "mysql",
     define: {
       timestamps: true,

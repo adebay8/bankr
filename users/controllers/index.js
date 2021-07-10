@@ -132,7 +132,7 @@ async function loginUser(req, res, next) {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User does not exist",
+        message: "Incorrect username or password",
       });
     }
 
@@ -149,10 +149,10 @@ async function loginUser(req, res, next) {
   } catch (error) {
     await t.rollback();
 
-    return res.status(500).json({
-      success: false,
-      error: "Internal server error",
-    });
+    if (error.response) {
+      return res.status(400).json({ error: error.response.data });
+    }
+    return res.status(400).json({ error });
   }
 }
 

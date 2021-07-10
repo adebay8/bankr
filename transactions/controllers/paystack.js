@@ -14,11 +14,13 @@ const paystack = axios.create({
 });
 
 exports.initializeCustomerTransaction = async ({
+  reference,
   email,
   amount,
   callback_url,
 }) => {
   const initialize = await paystack.post("/transaction/initialize", {
+    reference,
     email,
     amount,
     callback_url,
@@ -119,4 +121,15 @@ exports.chargeCardWithAuthorization = async ({
   );
 
   return chargeResult.data;
+};
+
+exports.createCustomerWallet = async (data) => {
+  const result = await paystack.post("/customer", {
+    ...data,
+  });
+  return {
+    success: result.data.status,
+    message: result.data.message,
+    data: result.data.data,
+  };
 };

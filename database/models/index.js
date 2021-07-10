@@ -9,6 +9,8 @@ const db = {};
 let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
+} else if (config.uri) {
+  sequelize = new Sequelize(config.uri);
 } else {
   sequelize = new Sequelize(
     config.database,
