@@ -9,7 +9,7 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
     await queryInterface.changeColumn(
-      "customertransactioninitializations",
+      "CustomerTransactionInitializations",
       "access_code",
       {
         type: Sequelize.STRING(50),
@@ -26,7 +26,7 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
     await queryInterface.changeColumn(
-      "customertransactioninitializations",
+      "CustomerTransactionInitializations",
       "access_code",
       {
         type: Sequelize.STRING(50),
