@@ -21,7 +21,7 @@ module.exports = {
         : null,
   },
   production: {
-    url: process.env.JAWSDB_URL,
+    uri: process.env.JAWSDB_URL,
     dialect: "mysql",
     define: {
       timestamps: true,
